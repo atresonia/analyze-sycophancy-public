@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "publicview-sae"
+version = "0.1.0"
+description = "Sparse autoencoder training and neuron interpretation for PublicView"
+requires-python = ">=3.11"
+dependencies = [
+    "torch",
+    "numpy",
+    "scikit-learn",
+    "matplotlib",
+    "seaborn",
+    "tqdm",
+    "transformers",
+    "sentence-transformers",
+    "mlx",
+    "mlx-embeddings",
+    "openai",
+    "tiktoken",
+    "requests",
+    "psutil",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["third_party*", "scripts*", "embedding_generation*", "data_preprocessing*"]
