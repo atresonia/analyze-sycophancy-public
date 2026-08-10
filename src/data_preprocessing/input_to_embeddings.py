@@ -17,7 +17,6 @@ from transformers import AutoTokenizer
 import os
 
 
-CHUNK_THRESHOLD_WORDS = 500
 MODEL_NAME = "mlx-community/Qwen3-Embedding-8B-4bit-DWQ"
 
 def calculate_token_length(tokenizer: AutoTokenizer, text: str) -> int:
@@ -50,17 +49,6 @@ def convert_input_files_to_json_object(input_files: list[str], tokenizer: AutoTo
         n_posts += loop_posts
         n_comments += loop_comments
         n_output_rows += loop_out
-    # write summary to bottom of file as a {} object
-    # summary = {
-    #     "n_input_lines": n_input_lines,
-    #     "n_dropped_empty_or_removal_type": n_dropped_empty_or_removal_type,
-    #     "n_posts": n_posts,
-    #     "n_comments": n_comments,
-    #     "n_output_rows": n_output_rows,
-    # }
-    # with open(output_file, 'a', encoding='utf-8') as target:
-    #     target.write(json.dumps(summary, ensure_ascii=False) + '\n')
-
     print(f"Processed {n_input_lines} lines")
     print(f"Dropped {n_dropped_empty_or_removal_type} empty lines or removed/deleted posts/comments")
     print(f"Found {n_posts} posts and {n_comments} comments")
@@ -90,10 +78,6 @@ def convert_input_file_to_list(input_file: str, tokenizer: AutoTokenizer, output
                 n_posts += 1
             else:
                 n_comments += 1
-            # NOTE: we will add chunking logic here later: for now, we are just filtering out long documents
-            # if len(text.split()) > CHUNK_THRESHOLD_WORDS:
-            #     n_skipped_long_docs += 1
-            #     continue
             n_output_rows += 1
             target.write(json.dumps({
                 'id': obj.get('id'),
