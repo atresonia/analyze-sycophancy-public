@@ -57,9 +57,9 @@ def load_split(embed_path: str, val_ratio: float = VAL_RATIO):
     train_data, val_data = split_train_val_embeddings(embed_data, val_ratio)
     return train_data, val_data, load_embeddings(train_data), load_embeddings(val_data)
 
-def load_trained_sae(M, K, checkpoint_dir) -> SparseAutoencoder:
+def load_trained_sae(M, K, checkpoint_dir, prefix_lengths=None) -> SparseAutoencoder:
     """Load an already-trained checkpoint"""
-    checkpoint_name = get_sae_checkpoint_name(M, K)
+    checkpoint_name = get_sae_checkpoint_name(M, K, prefix_lengths)
     checkpoint_path = os.path.join(checkpoint_dir, checkpoint_name)
     if not os.path.exists(checkpoint_path):
         raise FileNotFoundError(

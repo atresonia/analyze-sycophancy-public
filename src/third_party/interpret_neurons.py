@@ -339,7 +339,7 @@ class NeuronInterpreter:
                 ordered_interpretations[idx] = fut.result()
             return ordered_interpretations
 
-    def interpret_neurons(
+    def     interpret_neurons(
         self,
         texts: List[str],
         activations: np.ndarray,
