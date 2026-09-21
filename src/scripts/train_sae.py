@@ -34,8 +34,9 @@ def main():
         help="Number of top neurons to keep during training loop")
     parser.add_argument("-m", "--max-epochs", type=int, default=100,
         help="Maximum number of epochs to train for")
-    parser.add_argument("-c", "--checkpoint-dir", type=str, default=".checkpoints/reddit_comments_embed",
+    parser.add_argument("-c", "--checkpoint-dir", type=str, default=".checkpoints/reddit_comments_embed_qwen",
         help="Directory to save checkpoints")
+    parser.add_argument("-p", "--prefix_lengths", nargs="*", type=int, default=None)
     parser.add_argument("-nt", "--no-train", action="store_true", default=False,
         help="Whether to load a checkpoint instead of training a new model")
     args = parser.parse_args()
@@ -44,19 +45,19 @@ def main():
     print(f"train_embed shape: {train_embeddings.shape}")
     print(f"val_embeddings shape: {val_embeddings.shape}")
 
-    # prefix_lengths = [32, 128]
-    prefix_lengths = None
+    # prefix_lengths = [32, 128, 256]
+    # prefix_lengths = None
     CACHE_NAME = "reddit_posts_embed"
     # CACHE_NAME = "reddit_posts_embed"
     # checkpoint_dir = f'.checkpoints/{CACHE_NAME}'
     if args.no_train:
-        model = load_trained_sae(args.neuron_size, args.top_k_neurons, args.checkpoint_dir)
+        model = load_trained_sae(args.neuron_size, args.top_k_neurons, args.checkpoint_dir, args.prefix_lengths)
     else:
         model = train_sae(
             embeddings=train_embeddings,
             M=args.neuron_size,
             K=args.top_k_neurons,
-            matryoshka_prefix_lengths=prefix_lengths,
+            matryoshka_prefix_lengths=args.prefix_lengths,
             checkpoint_dir=args.checkpoint_dir,
             val_embeddings=val_embeddings,
             n_epochs=args.max_epochs

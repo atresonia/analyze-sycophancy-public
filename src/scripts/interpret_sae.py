@@ -3,7 +3,7 @@ import os
 import json
 import argparse
  
-from sae_utils import (
+from .sae_utils import (
     load_split,
     load_trained_sae,
     compute_feature_stats,
@@ -26,6 +26,7 @@ def main():
     parser.add_argument("-n", "--neuron_size", type=int, default=128)
     parser.add_argument("-k", "--top-k-neurons", type=int, default=4)
     parser.add_argument("-c", "--checkpoint-dir", type=str, default=".checkpoints/reddit_comments_embed")
+    parser.add_argument("-p", "--prefix_lengths", nargs="*", default=None)
     parser.add_argument("-t", "--top-n-features", type=int, default=20, help="How many top features to interpret")
     parser.add_argument("--interpreter-model", type=str, default="gpt-5.2")
     parser.add_argument("--annotator-model", type=str, default="gpt-5-mini")
@@ -43,14 +44,14 @@ def main():
         )
     
     train_data, _, train_embeddings, _ = load_split(args.embed_path)
-    model = load_trained_sae(args.neuron_size, args.top_k_neurons, args.checkpoint_dir)
+    model = load_trained_sae(args.neuron_size, args.top_k_neurons, args.checkpoint_dir, args.prefix_lengths)
     activations, feature_means, _ = compute_feature_stats(model, train_embeddings)
     top_idx = select_top_features(feature_means, args.top_n_features)
     print(f"Interpreting {len(top_idx)} features: {top_idx}")
 
     train_texts = load_texts_for_ids(args.text_file, train_data["ids"])
 
-    print(f"Loaded {len(train_texts)} aligned texts for interpretation")
+    print(f"Loaded {len(train_texts)} aligned texts for interpretation (train split)")
  
     interpreter = NeuronInterpreter(
         interpreter_model=args.interpreter_model,
@@ -80,7 +81,7 @@ def main():
  
     for idx, candidates in interpretations.items():
         print(f"  neuron {idx}: {candidates}")
- 
+    
  
 if __name__ == "__main__":
     main()
